@@ -103,7 +103,7 @@ To empower job seekers with personalized, AI-driven feedback and give them contr
 * ✅ Application Tracker (PostgreSQL + FastAPI)
 * ✅ Job Scraper/API Layer (`BeautifulSoup`, `Selenium`, or RapidAPI)
 * ✅ REST API for all modules
-* ✅ Optional: Authentication for multi-user support (Supabase/Firebase)
+* ✅ Authentication for multi-user support (`Supabase` or `Firebase`)
 
 ---
 
