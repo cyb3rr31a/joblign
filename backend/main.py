@@ -36,4 +36,4 @@ async def get_suggestions(resume_data: dict, job_description: str):
 @app.get("/search_jobs/")
 async def search_jobs(query: str, location: str = "remote"):
     jobs = scraper.fetch_jobs(query, location)
-    return {"results": jobs}g
+    return {"results": jobs}
