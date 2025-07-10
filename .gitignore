@@ -5,3 +5,16 @@ __pycache__/
 *.pyd
 .env
 venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Tests
+coverage/
