@@ -2,16 +2,15 @@ import pdfplumber
 import docx2txt
 import io
 import spacy
-import re
 
 # Load the spaCy model
 nlp = spacy.load("en_core_web_sm")
 
-skill_keywords = ["python", "java", "sql", "javascript", "html", "css", "git"]
+skill_keywords = ["python", "java", "sql", "javascript", "html", "css", "git", "react", "next.js", "tailwind", "django"]
 
-education_keywords = ['bachelor', 'master', 'phd', 'degree', 'university', 'college', 'school']
+education_keywords = ["bachelor", "master"]
 
-exp_keywords = ['experience', 'intern', 'managed', 'intern', 'developed', 'engineer', 'project', 'led']
+exp_keywords = ["intern", "attache"]
 
 def extract_text_from_pdf(file_bytes):
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
