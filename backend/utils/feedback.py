@@ -39,7 +39,7 @@ def generate_feedback(resume_data: dict, job_description:str):
 
     try:
         response = client.chat.completions.create(
-            model = "gpt-4",
+            model = "gpt-4.1",
             messages=[
                 {"role": "system", "content": "You are an expert resume coach."},
                 {"role": "user", "content": prompt}
