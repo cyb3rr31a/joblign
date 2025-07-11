@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
-from utils import parser, scorer
-# , scraper, feedback
+from utils import parser, scorer, feedback
+# , scraper
 
 app = FastAPI()
 
@@ -53,13 +53,22 @@ async def get_match_score():
         "matched_skills": matched_skills,
         "missing_skills": sorted(missing_skills)
     }
-"""
+
 # Get recommendations on improvements
-@app.post("/improvement_suggestions/")
-async def get_suggestions(resume_data: dict, job_description: str):
-    suggestions = feedback.generate_feedback(resume_data, job_description)
+@app.post("/get_improvement_suggestions/")
+async def get_suggestions():
+    resume_data = resume_store.get("data")
+    job_data = job_description_store.get("data")
+
+    if not resume_data or not job_data:
+        return {"error": "Missing resume or job description data"}
+    
+    score, missing_skills = scorer.compute_score(resume_data, job_data["text"])
+    resume_data["missing_skills"] = missing_skills
+    suggestions = feedback.generate_feedback(resume_data, job_data)
     return {"suggestions": suggestions}
 
+"""
 # Web scraping for jobs
 @app.get("/search_jobs/")
 async def search_jobs(query: str, location: str = "remote"):
