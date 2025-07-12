@@ -12,6 +12,7 @@ class User(Base):
     jobs = relationship("Job", back_populates="owner")
 class Job(Base):
     __tablename__ = "jobs"
+    
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="jobs")
     id = Column(Integer, primary_key=True, index=True)

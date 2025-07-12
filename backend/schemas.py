@@ -2,6 +2,16 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+class UserCreate(BaseModel):
+    email: str
+    password: str
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    class Config:
+        orm_mode = True
+
 class JobCreate(BaseModel):
     title: str
     company: str
@@ -28,7 +38,5 @@ class JobOut(BaseModel):
     application_link: Optional[str]
     notes: Optional[str]
     created_at: datetime
-
-
-class Config:
-    orm_mode = True
+    class Config:
+        orm_mode = True

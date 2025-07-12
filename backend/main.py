@@ -1,4 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from auth import get_current_user, create_access_token, hash_password, verify_password
 from utils import parser, scorer, feedback
 # , scraper
 from sqlalchemy.orm import Session
@@ -20,13 +22,39 @@ def get_db():
 
 # In-memory store
 resume_store = {}
-resume_score = {}
+resume_score = 0
 job_description_store = {}
 
 # Greeting message
 @app.get("/")
 def root():
     return {"message": "Welcome to Joblign API"}
+
+# User authentication
+@app.post("/register")
+def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    new_user = models.User(
+        email = user.email,
+        hashed_password = hash_password(user.password)
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Invalid Credentials")
+    
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 # Upload resume
 @app.post("/upload_resume/")
@@ -95,28 +123,41 @@ async def search_jobs(query: str, location: str = "remote"):
 @app.post("/jobs/", response_model=schemas.JobOut)
 def create_job(
     job: schemas.JobCreate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
     ):
-    db_job = models.Job(**job.dict(), resume_score = resume_score)
+    db_job = models.Job(**job.dict(), resume_score = resume_score, owner_id = current_user.id)
     db.add(db_job)
     db.commit()
     db.refresh(db_job)
     return db_job
 
 @app.get("/jobs/", response_model=list[schemas.JobOut])
-def get_all_jobs(db: Session = Depends(get_db)):
-    return db.query(models.Job).all()
+def get_all_jobs(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    return db.query(models.Job).filter(models.Job.owner_id == current_user.id).all()
 
 @app.get("/jobs/{job_id}", response_model=schemas.JobOut)
-def get_job(job_id: int, db: Session = Depends(get_db)):
-    job = db.query(models.Job).filter(models.Job.id == job_id). first()
+def get_job(
+    job_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id). first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
 
 @app.put("/jobs/{job_id}", response_model=schemas.JobOut)
-def update_job(job_id: int, updates: schemas.JobUpdate, db: Session = Depends(get_db)):
-    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+def update_job(
+    job_id: int, 
+    updates: schemas.JobUpdate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     for field, value in updates.dict(exclude_unset=True).items():
@@ -126,8 +167,12 @@ def update_job(job_id: int, updates: schemas.JobUpdate, db: Session = Depends(ge
     return job
 
 @app.delete("/jobs/{job_id}")
-def delete_job(job_id: int, db: Session = Depends(get_db)):
-    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+def delete_job(
+    job_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    job = db.query(models.Job).filter(models.Job.id == job_id, models.Job.owner_id == current_user.id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     db.delete(job)
