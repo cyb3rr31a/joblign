@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -49,10 +50,13 @@ export default function LoginPage() {
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div>
             <div className="flex items-center space-x-2 mb-8">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
-                </svg>
+              <div className="bg-white rounded-2xl">
+                <Image
+                  src="/assets/photos/joblign.png"
+                  alt="Joblign logo"
+                  width={50}
+                  height={50}
+                />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">Joblign</h1>
             </div>
@@ -110,7 +114,7 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`block w-full pl-10 pr-10 py-3 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent ${
+                    className={`block w-full pl-10 pr-10 py-3 border rounded-lg shadow-sm placeholder-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent ${
                       errors.password ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Enter your password"
@@ -203,14 +207,9 @@ export default function LoginPage() {
 
       {/* Right side - Feature showcase */}
       <div className="hidden lg:block relative w-0 flex-1">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900 flex items-center">
           <div className="text-center text-white px-8">
             <div className="mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 rounded-full mb-4">
-                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
               <h3 className="text-3xl font-bold mb-4">AI-Powered Job Matching</h3>
               <p className="text-xl text-blue-100 mb-8">
                 Get personalized resume optimization and discover perfect job matches
