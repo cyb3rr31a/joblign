@@ -4,8 +4,9 @@ from auth import get_current_user, create_access_token, hash_password, verify_pa
 from utils import parser, scorer, feedback
 # , scraper
 from sqlalchemy.orm import Session
-import models, schemas
 from database import SessionLocal, engine
+import models, schemas
+
 
 app = FastAPI()
 
